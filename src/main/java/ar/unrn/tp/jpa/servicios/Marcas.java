@@ -6,9 +6,12 @@ import ar.unrn.tp.modelo.Marca;
 import org.junit.jupiter.api.AfterAll;
 
 import jakarta.persistence.*;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.function.Consumer;
 
+@Service
 public class Marcas implements MarcaService {
 
     private final EntityManagerFactory emf;

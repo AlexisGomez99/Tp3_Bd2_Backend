@@ -8,9 +8,12 @@ import ar.unrn.tp.modelo.Producto;
 import org.junit.jupiter.api.AfterAll;
 
 import jakarta.persistence.*;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.function.Consumer;
 
+@Service
 public class Productos implements ProductoService {
 
     private final EntityManagerFactory emf;

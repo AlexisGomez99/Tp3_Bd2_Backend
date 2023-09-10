@@ -7,11 +7,14 @@ import ar.unrn.tp.modelo.*;
 import org.junit.jupiter.api.AfterAll;
 
 import jakarta.persistence.*;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Service
 public class Descuentos implements DescuentoService {
 
     private final EntityManagerFactory emf;

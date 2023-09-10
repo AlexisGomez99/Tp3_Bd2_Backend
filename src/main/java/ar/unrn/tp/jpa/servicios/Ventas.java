@@ -6,9 +6,12 @@ import ar.unrn.tp.modelo.*;
 import org.junit.jupiter.api.AfterEach;
 
 import jakarta.persistence.*;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+@Service
 public class Ventas implements VentaService {
 
 

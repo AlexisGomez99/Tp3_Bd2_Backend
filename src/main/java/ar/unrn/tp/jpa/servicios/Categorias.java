@@ -5,9 +5,12 @@ import ar.unrn.tp.modelo.Categoria;
 import org.junit.jupiter.api.AfterAll;
 
 import jakarta.persistence.*;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.function.Consumer;
 
+@Service
 public class Categorias implements CategoriaService {
 
     private final EntityManagerFactory emf;
