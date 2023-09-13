@@ -12,20 +12,18 @@ import java.util.Objects;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "Producto", uniqueConstraints = @UniqueConstraint(columnNames = "codigo"))
 public class Producto {
 
     @Id
     @GeneratedValue
     private Long id;
-    @Column(name = "codigo", unique = true)
+    @Column(unique = true)
     private String codigo;
     private String descripcion;
-
-    @OneToOne
+    @ManyToOne
     private Categoria categoria;
     private double precio;
-    @OneToOne
+    @ManyToOne
     private Marca marca;
 
     public Producto(String codigo, String descripcion, double precio, Categoria categoria , Marca marca) throws NotNullException {

@@ -1,6 +1,7 @@
 package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.VentaService;
+import ar.unrn.tp.dto.*;
 import ar.unrn.tp.excepciones.NotNullException;
 import ar.unrn.tp.modelo.*;
 import org.junit.jupiter.api.AfterEach;
@@ -116,16 +117,30 @@ public class Ventas implements VentaService {
     }
 
     @Override
-    public List<Venta> ventas() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        List<Venta> ventas = new ArrayList<>();
+    public List<VentaDTO> ventas() {
+        List<VentaDTO> ventaDTOS= new ArrayList<>();
+        try {
+            inTransactionExecute((em) -> {
+                List<Venta> ventas;
+                TypedQuery<Venta> q = em.createQuery("select v from Venta v", Venta.class);
+                ventas = q.getResultList();
+                List<ProductoDTO> productoDTOS= new ArrayList<>();
+                for(Venta v: ventas){
+                    for(ProductoVendido p: v.getListaProductos()){
+                        productoDTOS.add(new ProductoDTO(p.getId(),p.getCodigo(),p.getDescripcion(),new CategoriaDTO(p.getCategoria().getId(),p.getCategoria().getNombreCategoria()),p.getPrecio(),new MarcaDTO(p.getMarca().getId(),p.getMarca().getNombre())));
+                    }
+                    TarjetaDTO tarjetaDTO= new TarjetaDTO(v.getTarjeta().getId(),v.getTarjeta().getNumTarjeta(),v.getTarjeta().getNombre());
+                    ClienteDTO clienteDTO= new ClienteDTO(v.getCliente().getId(),v.getCliente().getNombre(),v.getCliente().getApellido(),v.getCliente().getDni(),v.getCliente().getEmail());
+                    clienteDTO.agregarTarjeta(tarjetaDTO);
+                    ventaDTOS.add(new VentaDTO(v.getId(),v.getFechaVenta(),clienteDTO,tarjetaDTO,productoDTOS,v.getTotalPagado()));
+                    productoDTOS.clear();
+                }
 
-        TypedQuery<Venta> t = em.createQuery("select v from Venta v", Venta.class);
-        ventas.addAll(t.getResultList());
-        tx.commit();
-        return ventas;
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return ventaDTOS;
     }
 
 

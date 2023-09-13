@@ -16,10 +16,10 @@ public class ProductoVendido {
     private Long id;
     private String codigo;
     private String descripcion;
-    @OneToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Categoria categoria;
     private double precio;
-    @OneToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Marca marca;
 
     public ProductoVendido(String codigo, String descripcion, Categoria categoria, double precio, Marca marca) {

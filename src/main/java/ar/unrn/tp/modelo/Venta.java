@@ -18,8 +18,10 @@ public class Venta {
     @GeneratedValue
     private Long id;
     private LocalDate fechaVenta;
-    @OneToOne
+    @ManyToOne
     private Cliente cliente;
+    @ManyToOne
+    private Tarjeta tarjeta;
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<ProductoVendido> listaProductos;
     private double totalPagado;

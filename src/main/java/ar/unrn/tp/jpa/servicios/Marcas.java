@@ -1,6 +1,7 @@
 package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.MarcaService;
+import ar.unrn.tp.dto.MarcaDTO;
 import ar.unrn.tp.modelo.Categoria;
 import ar.unrn.tp.modelo.Marca;
 import org.junit.jupiter.api.AfterAll;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.AfterAll;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -42,14 +44,18 @@ public class Marcas implements MarcaService {
 
     @Override
     public List listarMarcas() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        List<Marca> marcas;
-        tx.begin();
-        TypedQuery<Marca> q = em.createQuery("select m from Marca m", Marca.class);
-        marcas = q.getResultList();
-        tx.commit();
-        return marcas;
+        List<MarcaDTO> marcaDTOS= new ArrayList<>();
+        inTransactionExecute((em) -> {
+            List<Marca> marcas;
+            TypedQuery<Marca> q = em.createQuery("select m from Marca m", Marca.class);
+            marcas = q.getResultList();
+            for(Marca m: marcas){
+                marcaDTOS.add(new MarcaDTO(m.getId(),m.getNombre()));
+            }
+
+        });
+
+        return marcaDTOS;
     }
 
     public void inTransactionExecute(Consumer<EntityManager> bloqueDeCodigo) {

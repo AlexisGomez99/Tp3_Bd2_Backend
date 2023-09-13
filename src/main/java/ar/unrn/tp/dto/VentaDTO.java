@@ -11,7 +11,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class VentaDTO {
     private Long id;
     private LocalDate fechaVenta;
@@ -19,4 +18,13 @@ public class VentaDTO {
     private TarjetaDTO tarjeta;
     private List<ProductoDTO> listaProductos;
     private double totalPagado;
+
+    public VentaDTO(Long id, LocalDate fechaVenta, ClienteDTO cliente, TarjetaDTO tarjeta, List<ProductoDTO> listaProductos, double totalPagado) {
+        this.id = id;
+        this.fechaVenta = fechaVenta;
+        this.cliente = cliente;
+        this.tarjeta = tarjeta;
+        this.listaProductos = listaProductos;
+        this.totalPagado = totalPagado;
+    }
 }

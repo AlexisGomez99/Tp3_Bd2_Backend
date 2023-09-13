@@ -1,12 +1,14 @@
 package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.CategoriaService;
+import ar.unrn.tp.dto.CategoriaDTO;
 import ar.unrn.tp.modelo.Categoria;
 import org.junit.jupiter.api.AfterAll;
 
 import jakarta.persistence.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -41,14 +43,17 @@ public class Categorias implements CategoriaService {
 
     @Override
     public List listarCategorias() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        List<Categoria> categorias;
-        tx.begin();
-        TypedQuery<Categoria> q = em.createQuery("select c from Categoria c", Categoria.class);
-        categorias = q.getResultList();
-        tx.commit();
-        return categorias;
+        List<CategoriaDTO> categoriaDTOS= new ArrayList<>();
+        inTransactionExecute((em) -> {
+            List<Categoria> categorias;
+            TypedQuery<Categoria> q = em.createQuery("select c from Categoria c", Categoria.class);
+            categorias = q.getResultList();
+            for(Categoria c: categorias){
+                categoriaDTOS.add(new CategoriaDTO(c.getId(),c.getNombreCategoria()));
+            }
+        });
+
+        return categoriaDTOS;
     }
 
     public void inTransactionExecute(Consumer<EntityManager> bloqueDeCodigo) {

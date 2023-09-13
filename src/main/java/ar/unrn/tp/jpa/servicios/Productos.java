@@ -1,6 +1,9 @@
 package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.ProductoService;
+import ar.unrn.tp.dto.CategoriaDTO;
+import ar.unrn.tp.dto.MarcaDTO;
+import ar.unrn.tp.dto.ProductoDTO;
 import ar.unrn.tp.excepciones.NotNullException;
 import ar.unrn.tp.modelo.Categoria;
 import ar.unrn.tp.modelo.Marca;
@@ -10,6 +13,7 @@ import org.junit.jupiter.api.AfterAll;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -64,14 +68,18 @@ public class Productos implements ProductoService {
 
     @Override
     public List listarProductos() {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        List<Producto> productos;
-        tx.begin();
-        TypedQuery<Producto> q = em.createQuery("select p from Producto p", Producto.class);
-        productos = q.getResultList();
-        tx.commit();
-        return productos;
+        List<ProductoDTO> productoDTOS= new ArrayList<>();
+        inTransactionExecute((em) -> {
+            List<Producto> productos;
+            TypedQuery<Producto> q = em.createQuery("select p from Producto p", Producto.class);
+            productos = q.getResultList();
+            for(Producto p: productos){
+                productoDTOS.add(new ProductoDTO(p.getId(),p.getCodigo(),p.getDescripcion(),new CategoriaDTO(p.getCategoria().getId(),p.getCategoria().getNombreCategoria()),p.getPrecio(),new MarcaDTO(p.getMarca().getId(),p.getMarca().getNombre())));
+            }
+
+        });
+
+        return productoDTOS;
     }
     public void inTransactionExecute(Consumer<EntityManager> bloqueDeCodigo) {
         EntityManager em = emf.createEntityManager();

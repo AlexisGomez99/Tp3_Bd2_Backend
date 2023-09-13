@@ -23,6 +23,7 @@ public class ProductoController {
     @PostMapping("/crear")
     @Operation(summary = "Agregar un Producto")
     public ResponseEntity<?> create(@RequestBody ProductoDTO productoDTO) {
+
         this.productos.crearProducto(productoDTO.getCodigo(),productoDTO.getDescripcion(),productoDTO.getPrecio(),productoDTO.getCategoria().getId(),productoDTO.getMarca().getId());
         return ResponseEntity.status(OK).body("Ok");
     }

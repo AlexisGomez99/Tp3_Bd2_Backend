@@ -35,8 +35,8 @@ public class CategoriaController {
         return ResponseEntity.status(OK).body("Ok");
     }
     @GetMapping("/listar")
-    @Operation(summary = "Agregar una Categoria")
-    public ResponseEntity<?> list(@RequestBody CategoriaDTO categoriaDTO) {
+    @Operation(summary = "Listar una Categoria")
+    public ResponseEntity<?> list() {
         this.categorias.listarCategorias();
         return ResponseEntity.status(OK).body(this.categorias.listarCategorias());
     }

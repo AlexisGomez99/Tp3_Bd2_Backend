@@ -1,6 +1,7 @@
 package ar.unrn.tp.jpa.servicios;
 
 import ar.unrn.tp.api.ClienteService;
+import ar.unrn.tp.dto.TarjetaDTO;
 import ar.unrn.tp.excepciones.EmailException;
 import ar.unrn.tp.excepciones.NotNullException;
 import ar.unrn.tp.excepciones.NotNumException;
@@ -87,14 +88,19 @@ public class Clientes implements ClienteService {
 
     @Override
     public List listarTarjetas(Long idCliente) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        List<Tarjeta> tarjetas = new ArrayList<>();
-        tx.begin();
-        Cliente cliente=em.getReference(Cliente.class,idCliente);
-        tarjetas= cliente.getTarjetas();
-        tx.commit();
-        return tarjetas;
+
+        List<TarjetaDTO> tarjetaDTOS= new ArrayList<>();
+        inTransactionExecute((em) -> {
+            List<Tarjeta> tarjetas = new ArrayList<>();
+            Cliente cliente=em.find(Cliente.class,idCliente);
+            tarjetas= cliente.getTarjetas();
+            for (Tarjeta t: tarjetas){
+                tarjetaDTOS.add(new TarjetaDTO(t.getId(),t.getNumTarjeta(),t.getNombre()));
+            }
+        });
+
+
+        return tarjetaDTOS;
     }
 
 
