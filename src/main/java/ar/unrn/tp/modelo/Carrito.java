@@ -54,7 +54,7 @@ public class Carrito {
 
     public Venta comprarListado() throws NotNullException {
         double total= this.calcularDescuento();
-        Venta venta= new Venta(LocalDate.now(), this.cliente,this.productoList,total);
+        Venta venta= new Venta(LocalDate.now(), this.cliente,this.productoList,total,this.tarjeta);
         return venta;
     }
 

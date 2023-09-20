@@ -2,6 +2,8 @@ package ar.unrn.tp.dto;
 
 
 import ar.unrn.tp.modelo.Producto;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +18,7 @@ public class VentaDTO {
     private LocalDate fechaVenta;
     private ClienteDTO cliente;
     private TarjetaDTO tarjeta;
+
     private List<ProductoDTO> listaProductos;
     private double totalPagado;
 
@@ -27,4 +30,6 @@ public class VentaDTO {
         this.listaProductos = listaProductos;
         this.totalPagado = totalPagado;
     }
+
+
 }

@@ -26,4 +26,6 @@ public class ProductoDTO {
         this.precio = precio;
         this.marca = marca;
     }
+
+
 }

@@ -42,4 +42,5 @@ public class ProductoVendido {
     public int hashCode() {
         return Objects.hash(getCodigo(), getDescripcion(), getCategoria(), getPrecio(), getMarca());
     }
+
 }

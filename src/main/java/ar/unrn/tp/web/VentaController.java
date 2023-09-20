@@ -4,9 +4,11 @@ import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.dto.ProductoDTO;
 import ar.unrn.tp.dto.VentaDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,20 +29,15 @@ public class VentaController {
     @PostMapping("/crear")
     @Operation(summary = "Agregar una Venta")
     public ResponseEntity<?> create(@RequestBody VentaDTO ventaDTO) throws Exception {
-        List<Long> prods = ventaDTO.getListaProductos().stream()
-                .map(ProductoDTO::getId)
-                .collect(Collectors.toList());
-
+        List<Long> prods = ventaDTO.getListaProductos().stream().map(ProductoDTO::getId).collect(Collectors.toList());
         this.ventas.realizarVenta(ventaDTO.getCliente().getId(),prods,ventaDTO.getTarjeta().getId());
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PutMapping("/actualizar")
-    @Operation(summary = "Modificar una Venta")
+    @PostMapping("/calcular")
+    @Operation(summary = "Calcular una Venta")
     public ResponseEntity<?> update(@RequestBody VentaDTO ventaDTO) throws Exception {
-        List<Long> prods = ventaDTO.getListaProductos().stream()
-                .map(ProductoDTO::getId)
-                .collect(Collectors.toList());
+        List<Long> prods = ventaDTO.getListaProductos().stream().map(ProductoDTO::getId).collect(Collectors.toList());
         return ResponseEntity.status(OK).body(this.ventas.calcularMonto(prods,ventaDTO.getTarjeta().getId()));
     }
 

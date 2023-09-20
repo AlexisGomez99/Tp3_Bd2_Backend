@@ -4,6 +4,8 @@ import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.dto.*;
 import ar.unrn.tp.excepciones.NotNullException;
 import ar.unrn.tp.modelo.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 
 import jakarta.persistence.*;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 @Service
 public class Ventas implements VentaService {
@@ -78,20 +81,20 @@ public class Ventas implements VentaService {
     }
 
     @Override
-    public double calcularMonto(List<Long> productos, Long idTarjeta) throws Exception {
-        double total=0;
+    public double calcularMonto(List<Long> productos,@NotNull Long idTarjeta) throws Exception {
+        AtomicReference<Double> total= new AtomicReference<>((double) 0);
 
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        Tarjeta tarjeta = em.find(Tarjeta.class, idTarjeta);
-        if (tarjeta == null){
-            throw new RuntimeException("La tarjeta solicitada no existe");
-        }
-        if (productos==null || productos.isEmpty()) {
-            throw new RuntimeException("No hay productos para esta lista");
-        }
 
-            tx.begin();
+        inTransactionExecute((em) -> {
+            double totalTransaccion=0;
+            Tarjeta tarjeta = em.find(Tarjeta.class, idTarjeta);
+            if (tarjeta == null){
+                throw new RuntimeException("La tarjeta solicitada no existe");
+            }
+            if (productos==null || productos.isEmpty()) {
+                throw new RuntimeException("No hay productos para esta lista");
+            }
+
             List<Descuento> descuentos = new ArrayList<>();
 
             TypedQuery<DescTarjeta> t = em.createQuery("select p from DescTarjeta p", DescTarjeta.class);
@@ -101,19 +104,25 @@ public class Ventas implements VentaService {
 
 
 
-                List<Producto> productoRecuperados = new ArrayList<>();
-                for (Long i : productos) {
-                    Producto prod = em.getReference(Producto.class, i);
-                    productoRecuperados.add(prod);
-                }
-                Carrito carrito = new Carrito(descuentos);
-                carrito.asociarTarjeta(tarjeta);
-                carrito.agregarProductos(productoRecuperados);
-                total = carrito.calcularDescuento();
+            List<Producto> productoRecuperados = new ArrayList<>();
+            for (Long i : productos) {
+                Producto prod = em.getReference(Producto.class, i);
+                productoRecuperados.add(prod);
+            }
+            Carrito carrito = new Carrito(descuentos);
+            carrito.asociarTarjeta(tarjeta);
+            carrito.agregarProductos(productoRecuperados);
 
-            tx.commit();
 
-        return total;
+            try {
+                totalTransaccion = carrito.calcularDescuento();
+            } catch (NotNullException e) {
+                throw new RuntimeException(e);
+            }
+            total.set(totalTransaccion);
+        });
+
+        return total.get();
     }
 
     @Override
@@ -133,7 +142,7 @@ public class Ventas implements VentaService {
                     ClienteDTO clienteDTO= new ClienteDTO(v.getCliente().getId(),v.getCliente().getNombre(),v.getCliente().getApellido(),v.getCliente().getDni(),v.getCliente().getEmail());
                     clienteDTO.agregarTarjeta(tarjetaDTO);
                     ventaDTOS.add(new VentaDTO(v.getId(),v.getFechaVenta(),clienteDTO,tarjetaDTO,productoDTOS,v.getTotalPagado()));
-                    productoDTOS.clear();
+
                 }
 
             });

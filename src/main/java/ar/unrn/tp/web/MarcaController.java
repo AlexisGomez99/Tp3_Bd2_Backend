@@ -5,6 +5,7 @@ import ar.unrn.tp.dto.CategoriaDTO;
 import ar.unrn.tp.dto.MarcaDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +26,13 @@ public class MarcaController {
     @Operation(summary = "Agregar una Marca")
     public ResponseEntity<?> create(@RequestBody MarcaDTO marcaDTO) {
         this.marcas.crearMarca(marcaDTO.getNombre());
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     @PutMapping("/actualizar")
     @Operation(summary = "Modificar una Categoria")
     public ResponseEntity<?> update(@RequestBody CategoriaDTO categoriaDTO) {
         this.marcas.modificarMarca(categoriaDTO.getId(),categoriaDTO.getNombreCategoria());
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     @GetMapping("/listar")
     @Operation(summary = "Listar Marcas")

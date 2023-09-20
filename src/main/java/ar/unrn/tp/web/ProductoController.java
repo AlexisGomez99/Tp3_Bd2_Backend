@@ -4,6 +4,7 @@ import ar.unrn.tp.api.ProductoService;
 import ar.unrn.tp.dto.ProductoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +26,13 @@ public class ProductoController {
     public ResponseEntity<?> create(@RequestBody ProductoDTO productoDTO) {
 
         this.productos.crearProducto(productoDTO.getCodigo(),productoDTO.getDescripcion(),productoDTO.getPrecio(),productoDTO.getCategoria().getId(),productoDTO.getMarca().getId());
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     @PutMapping("/actualizar")
     @Operation(summary = "Modificar un Producto")
     public ResponseEntity<?> update(@RequestBody ProductoDTO productoDTO) {
         this.productos.modificarProducto(productoDTO.getId(),productoDTO.getCodigo(),productoDTO.getDescripcion(),productoDTO.getPrecio(),productoDTO.getCategoria().getId(),productoDTO.getMarca().getId());
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
     @GetMapping("/listar")
     @Operation(summary = "Listar Productos")

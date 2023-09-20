@@ -22,18 +22,19 @@ public class Venta {
     private Cliente cliente;
     @ManyToOne
     private Tarjeta tarjeta;
-    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<ProductoVendido> listaProductos;
     private double totalPagado;
 
 
 
 
-    public Venta(LocalDate fechaVenta, Cliente cliente, List<Producto> listaProductos, double montoTotal) {
+    public Venta(LocalDate fechaVenta, Cliente cliente, List<Producto> listaProductos, double montoTotal, Tarjeta tarjeta) {
         this.fechaVenta = fechaVenta;
         this.cliente = cliente;
         this.listaProductos = this.convertProd(listaProductos);
         this.totalPagado = montoTotal;
+        this.tarjeta= tarjeta;
     }
 
     private List<ProductoVendido> convertProd(List<Producto> listaProductos){

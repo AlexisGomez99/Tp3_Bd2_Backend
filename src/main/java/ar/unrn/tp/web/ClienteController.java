@@ -5,6 +5,7 @@ import ar.unrn.tp.dto.ClienteDTO;
 import ar.unrn.tp.dto.TarjetaDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,21 +34,21 @@ public class ClienteController {
     @Operation(summary = "Modificar un Cliente")
     public ResponseEntity<?> update(@RequestBody ClienteDTO cliente) {
         this.clientes.modificarCliente(cliente.getId(),cliente.getNombre(),cliente.getApellido(),cliente.getDni(),cliente.getEmail());
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/eliminar/{id}")
     @Operation(summary = "Eliminar un Cliente")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         this.clientes.eliminarCliente(id);
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PutMapping("/agregar-tarjeta/{idCliente}")
     @Operation(summary = "Agregar tarjeta a un Cliente")
     public ResponseEntity<?> addCard(@PathVariable Long idCliente,@RequestBody TarjetaDTO tarjeta) {
         this.clientes.agregarTarjeta(idCliente,tarjeta.getNumTarjeta(),tarjeta.getNombre());
-        return ResponseEntity.status(OK).body("Ok");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/listar-tarjeta/{idCliente}")
