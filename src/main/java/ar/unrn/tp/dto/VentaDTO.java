@@ -18,7 +18,7 @@ public class VentaDTO {
     private LocalDate fechaVenta;
     private ClienteDTO cliente;
     private TarjetaDTO tarjeta;
-
+    private String codigoUnico;
     private List<ProductoDTO> listaProductos;
     private double totalPagado;
 

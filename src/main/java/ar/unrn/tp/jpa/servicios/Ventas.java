@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -35,7 +36,8 @@ public class Ventas implements VentaService {
             descuentos.addAll(t.getResultList());
             TypedQuery<DescProducto> p = em.createQuery("select p from DescProducto p", DescProducto.class);
             descuentos.addAll(p.getResultList());
-
+            if(idTarjeta == null)
+                throw new RuntimeException("Debe seleccionar una tarjeta.");
             Cliente cliente = em.find(Cliente.class,idCliente);
             Tarjeta tarjeta = em.find(Tarjeta.class,idTarjeta);
             if (cliente == null) {
@@ -67,8 +69,21 @@ public class Ventas implements VentaService {
                     carrito.agregarProductos(productoRecuperados);
                     Venta venta;
                     try {
+                        Calendar calendar = Calendar.getInstance();
+                        int anioActual = calendar.get(Calendar.YEAR);
+                        NextNumber numeroUnico=null;
+                        try {
+                            TypedQuery<NextNumber> query = em.createQuery("select n from NextNumber n where anio = :anioActual", NextNumber.class);
+                            query.setParameter("anioActual", anioActual);
+                            //query.setLockMode(LockModeType.PESSIMISTIC_WRITE); para modo pesismista, debo quitar el version?
+                            numeroUnico = query.getSingleResult();
+                        }catch(NoResultException e){
+                            numeroUnico= new NextNumber( calendar.get(Calendar.YEAR), 0);
+                        }
+                        carrito.asignarNumeroUnico(numeroUnico.recuperarSiguiente()+"-"+anioActual);
                         venta = carrito.comprarListado();
                         em.persist(venta);
+                        em.persist(numeroUnico);
                     } catch (NotNullException e) {
                         throw new RuntimeException(e);
                     }
@@ -81,12 +96,15 @@ public class Ventas implements VentaService {
     }
 
     @Override
-    public double calcularMonto(List<Long> productos,@NotNull Long idTarjeta) throws Exception {
+    public double calcularMonto(List<Long> productos, Long idTarjeta) throws Exception {
         AtomicReference<Double> total= new AtomicReference<>((double) 0);
 
 
         inTransactionExecute((em) -> {
             double totalTransaccion=0;
+            if(idTarjeta == null)
+                throw new RuntimeException("Debe seleccionar una tarjeta.");
+
             Tarjeta tarjeta = em.find(Tarjeta.class, idTarjeta);
             if (tarjeta == null){
                 throw new RuntimeException("La tarjeta solicitada no existe");
@@ -101,8 +119,6 @@ public class Ventas implements VentaService {
             descuentos.addAll(t.getResultList());
             TypedQuery<DescProducto> p = em.createQuery("select p from DescProducto p", DescProducto.class);
             descuentos.addAll(p.getResultList());
-
-
 
             List<Producto> productoRecuperados = new ArrayList<>();
             for (Long i : productos) {
