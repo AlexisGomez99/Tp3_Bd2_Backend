@@ -1,5 +1,6 @@
 package ar.unrn.tp.api;
 
+import ar.unrn.tp.dto.ProductoDTO;
 import ar.unrn.tp.excepciones.NotNullException;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface ProductoService {
             IdCategoría,Long marca);
     //Devuelve todos los productos
     List listarProductos();
+
+    ProductoDTO findById(Long id);
 }

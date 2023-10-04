@@ -39,4 +39,10 @@ public class ProductoController {
     public ResponseEntity<?> list() {
         return ResponseEntity.status(OK).body(this.productos.listarProductos());
     }
+
+    @GetMapping("listar/{id}")
+    @Operation(summary = "Obtener un producto")
+    public ResponseEntity findById(@PathVariable Long id){
+        return ResponseEntity.status(OK).body(this.productos.findById(id));
+    }
 }

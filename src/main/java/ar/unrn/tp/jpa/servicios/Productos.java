@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @Service
@@ -81,6 +82,21 @@ public class Productos implements ProductoService {
 
         return productoDTOS;
     }
+
+    @Override
+    public ProductoDTO findById(Long id) {
+        AtomicReference<ProductoDTO> dto = null;
+        inTransactionExecute((em) -> {
+            Producto p= em.find(Producto.class,id);
+            if (p==null)
+                throw new RuntimeException("El producto no existe");
+                dto.set(new ProductoDTO(p.getId(), p.getCodigo(), p.getDescripcion(), new CategoriaDTO(p.getCategoria().getId(), p.getCategoria().getNombreCategoria()), p.getPrecio(), new MarcaDTO(p.getMarca().getId(), p.getMarca().getNombre())));
+
+        });
+
+        return dto.get();
+    }
+
     public void inTransactionExecute(Consumer<EntityManager> bloqueDeCodigo) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
