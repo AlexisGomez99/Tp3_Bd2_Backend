@@ -25,7 +25,7 @@ public class Venta {
     @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<ProductoVendido> listaProductos;
     private double totalPagado;
-    @Version
+
     private String numeroUnico;
 
 

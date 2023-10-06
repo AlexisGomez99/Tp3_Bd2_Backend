@@ -2,6 +2,7 @@ package ar.unrn.tp.modelo;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 @Entity
 public class NextNumber {
@@ -11,6 +12,9 @@ public class NextNumber {
 
     private int anio;
     private int actual;
+
+    @Version
+    private int version;
 
     public NextNumber(int anio, int actual) {
         this.anio = anio;

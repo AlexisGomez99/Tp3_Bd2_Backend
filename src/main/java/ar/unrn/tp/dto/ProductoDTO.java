@@ -17,14 +17,16 @@ public class ProductoDTO {
     private CategoriaDTO categoria;
     private double precio;
     private MarcaDTO marca;
+    private Long version;
 
-    public ProductoDTO(Long id, String codigo, String descripcion, CategoriaDTO categoria, double precio, MarcaDTO marca) {
+    public ProductoDTO(Long id, String codigo, String descripcion, CategoriaDTO categoria, double precio, MarcaDTO marca, Long version) {
         this.id = id;
         this.codigo = codigo;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.precio = precio;
         this.marca = marca;
+        this.version = version;
     }
 
 

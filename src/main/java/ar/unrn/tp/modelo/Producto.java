@@ -25,7 +25,8 @@ public class Producto {
     private double precio;
     @ManyToOne
     private Marca marca;
-
+    @Version
+    private Long version;
     public Producto(String codigo, String descripcion, double precio, Categoria categoria , Marca marca) throws NotNullException {
         if (descripcion == null)
             throw new NotNullException("descripcion");
@@ -51,12 +52,12 @@ public class Producto {
         return x;
     }
 
-    public void modificarProducto(String codigo, String descripcion, double precio, Categoria categoria, Marca marca) {
+    public void modificarProducto(String codigo, String descripcion, double precio, Categoria categoria, Marca marca, Long version) {
         if (!getCodigo().equalsIgnoreCase(codigo) && codigo != null)
             setCodigo(codigo);
         if (!getDescripcion().equalsIgnoreCase(descripcion) && descripcion != null)
             setDescripcion(descripcion);
-        if (getPrecio() == precio && precio > 0)
+        if (getPrecio() != precio && precio > 0)
             setPrecio(precio);
         if (!categoria.equals(getCategoria()) && categoria != null) {
             setCategoria(categoria);
@@ -64,6 +65,7 @@ public class Producto {
         if (!marca.equals(getCategoria()) && marca != null) {
             setMarca(marca);
         }
+        setVersion(version);
     }
 
     @Override

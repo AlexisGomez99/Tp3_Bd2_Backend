@@ -50,15 +50,26 @@ public class Productos implements ProductoService {
     }
 
     @Override
-    public void modificarProducto(Long idProducto, String codigo, String descripcion, double precio, Long IdCategoría, Long IdMarca) {
+    public void modificarProducto(Long idProducto, String codigo, String descripcion, double precio, Long IdCategoría, Long IdMarca, Long version) {
         inTransactionExecute((em) -> {
 
             Producto producto = em.find(Producto.class, idProducto);
-
+            Categoria categoria = em.find(Categoria.class, IdCategoría);
+            Marca marca = em.find(Marca.class, IdMarca);
+            if(categoria==null)
+                throw new RuntimeException("La categoria no es valida");
+            if(marca==null)
+                throw new RuntimeException("La marca no es valida");
             if (producto!= null) {
-                Categoria categoria = em.getReference(Categoria.class, IdCategoría);
-                Marca marca = em.getReference(Marca.class, IdMarca);
-                producto.modificarProducto(codigo,descripcion,precio,categoria,marca);
+
+                try {
+                    if (!version.equals(producto.getVersion()))
+                        throw new OptimisticLockException();
+                    producto.modificarProducto(codigo, descripcion, precio, categoria, marca, version);
+
+                } catch (OptimisticLockException e){
+                    throw new RuntimeException("El producto ya fue modificado.");
+                }
             }
             else
                 throw new RuntimeException("El producto no existe");
@@ -75,7 +86,7 @@ public class Productos implements ProductoService {
             TypedQuery<Producto> q = em.createQuery("select p from Producto p", Producto.class);
             productos = q.getResultList();
             for(Producto p: productos){
-                productoDTOS.add(new ProductoDTO(p.getId(),p.getCodigo(),p.getDescripcion(),new CategoriaDTO(p.getCategoria().getId(),p.getCategoria().getNombreCategoria()),p.getPrecio(),new MarcaDTO(p.getMarca().getId(),p.getMarca().getNombre())));
+                productoDTOS.add(new ProductoDTO(p.getId(),p.getCodigo(),p.getDescripcion(),new CategoriaDTO(p.getCategoria().getId(),p.getCategoria().getNombreCategoria()),p.getPrecio(),new MarcaDTO(p.getMarca().getId(),p.getMarca().getNombre()),p.getVersion()));
             }
 
         });
@@ -84,17 +95,14 @@ public class Productos implements ProductoService {
     }
 
     @Override
-    public ProductoDTO findById(Long id) {
-        AtomicReference<ProductoDTO> dto = null;
+    public Producto findById(Long idProducto){
+        AtomicReference<Producto> producto = new AtomicReference<>();
         inTransactionExecute((em) -> {
-            Producto p= em.find(Producto.class,id);
-            if (p==null)
-                throw new RuntimeException("El producto no existe");
-                dto.set(new ProductoDTO(p.getId(), p.getCodigo(), p.getDescripcion(), new CategoriaDTO(p.getCategoria().getId(), p.getCategoria().getNombreCategoria()), p.getPrecio(), new MarcaDTO(p.getMarca().getId(), p.getMarca().getNombre())));
+            producto.set(em.find(Producto.class, idProducto));
 
         });
+        return producto.get();
 
-        return dto.get();
     }
 
     public void inTransactionExecute(Consumer<EntityManager> bloqueDeCodigo) {

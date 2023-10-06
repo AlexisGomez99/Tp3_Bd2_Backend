@@ -152,7 +152,7 @@ public class Ventas implements VentaService {
                 List<ProductoDTO> productoDTOS= new ArrayList<>();
                 for(Venta v: ventas){
                     for(ProductoVendido p: v.getListaProductos()){
-                        productoDTOS.add(new ProductoDTO(p.getId(),p.getCodigo(),p.getDescripcion(),new CategoriaDTO(p.getCategoria().getId(),p.getCategoria().getNombreCategoria()),p.getPrecio(),new MarcaDTO(p.getMarca().getId(),p.getMarca().getNombre())));
+                        productoDTOS.add(new ProductoDTO(p.getId(),p.getCodigo(),p.getDescripcion(),new CategoriaDTO(p.getCategoria().getId(),p.getCategoria().getNombreCategoria()),p.getPrecio(),new MarcaDTO(p.getMarca().getId(),p.getMarca().getNombre()),0L));
                     }
                     TarjetaDTO tarjetaDTO= new TarjetaDTO(v.getTarjeta().getId(),v.getTarjeta().getNumTarjeta(),v.getTarjeta().getNombre());
                     ClienteDTO clienteDTO= new ClienteDTO(v.getCliente().getId(),v.getCliente().getNombre(),v.getCliente().getApellido(),v.getCliente().getDni(),v.getCliente().getEmail());

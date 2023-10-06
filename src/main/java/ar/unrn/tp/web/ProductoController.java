@@ -31,7 +31,7 @@ public class ProductoController {
     @PutMapping("/actualizar")
     @Operation(summary = "Modificar un Producto")
     public ResponseEntity<?> update(@RequestBody ProductoDTO productoDTO) {
-        this.productos.modificarProducto(productoDTO.getId(),productoDTO.getCodigo(),productoDTO.getDescripcion(),productoDTO.getPrecio(),productoDTO.getCategoria().getId(),productoDTO.getMarca().getId());
+        this.productos.modificarProducto(productoDTO.getId(),productoDTO.getCodigo(),productoDTO.getDescripcion(),productoDTO.getPrecio(),productoDTO.getCategoria().getId(),productoDTO.getMarca().getId(), productoDTO.getVersion());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
     @GetMapping("/listar")
