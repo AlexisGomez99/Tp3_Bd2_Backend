@@ -27,7 +27,7 @@ public class Cliente {
     @Column(name ="dni", unique = true)
     private String dni;
     private String email;
-    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private List<Tarjeta> tarjetas;
 
     public Cliente(String nombre, String apellido, String dni, String email) {

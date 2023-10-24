@@ -1,6 +1,7 @@
 package ar.unrn.tp.api;
 
 import ar.unrn.tp.dto.VentaDTO;
+import ar.unrn.tp.modelo.Venta;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface VentaService {
     //Devuelve todas las ventas realizadas
 
     List<VentaDTO> ventas();
+
+    List<Venta> ventasRecientesDeCliente(Long idCliente) throws Exception;
 }

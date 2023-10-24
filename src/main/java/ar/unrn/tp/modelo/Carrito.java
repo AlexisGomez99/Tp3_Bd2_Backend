@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 @Getter
@@ -55,7 +56,7 @@ public class Carrito {
 
     public Venta comprarListado() throws NotNullException {
         double total= this.calcularDescuento();
-        Venta venta= new Venta(LocalDate.now(), this.cliente,this.productoList,total,this.tarjeta,this.numeroUnico);
+        Venta venta= new Venta(LocalDateTime.now(), this.cliente,this.productoList,total,this.tarjeta,this.numeroUnico);
         return venta;
     }
 

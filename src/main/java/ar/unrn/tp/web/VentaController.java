@@ -46,4 +46,10 @@ public class VentaController {
     public ResponseEntity<?> list() {
         return ResponseEntity.status(OK).body(this.ventas.ventas());
     }
+
+    @GetMapping("/listar-recientes/{idCliente}")
+    @Operation(summary = "Listar ultimos tres")
+    public ResponseEntity<?> findAllRecent(@PathVariable Long idCliente) throws Exception {
+        return ResponseEntity.status(OK).body(this.ventas.ventasRecientesDeCliente(idCliente));
+    }
 }

@@ -1,11 +1,10 @@
 package ar.unrn.tp.jpa.servicios;
 
+import ar.unrn.tp.api.CacheVentaService;
 import ar.unrn.tp.api.VentaService;
 import ar.unrn.tp.dto.*;
 import ar.unrn.tp.excepciones.NotNullException;
 import ar.unrn.tp.modelo.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 
 import jakarta.persistence.*;
@@ -21,9 +20,10 @@ public class Ventas implements VentaService {
 
 
     private final EntityManagerFactory emf;
-
-    public Ventas(EntityManagerFactory emf) {
+    private CacheVentaService cacheVentaService;
+    public Ventas(EntityManagerFactory emf, CacheVentaService cacheVentaService) {
         this.emf = emf;
+        this.cacheVentaService= cacheVentaService;
     }
 
     @Override
@@ -75,8 +75,9 @@ public class Ventas implements VentaService {
                         try {
                             TypedQuery<NextNumber> query = em.createQuery("select n from NextNumber n where anio = :anioActual", NextNumber.class);
                             query.setParameter("anioActual", anioActual);
-                            //query.setLockMode(LockModeType.PESSIMISTIC_WRITE); para modo pesismista, debo quitar el version?
+                            query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
                             numeroUnico = query.getSingleResult();
+
                         }catch(NoResultException e){
                             numeroUnico= new NextNumber( calendar.get(Calendar.YEAR), 0);
                         }
@@ -84,6 +85,7 @@ public class Ventas implements VentaService {
                         venta = carrito.comprarListado();
                         em.persist(venta);
                         em.persist(numeroUnico);
+                        this.cacheVentaService.limpiarCache(idCliente);
                     } catch (NotNullException e) {
                         throw new RuntimeException(e);
                     }
@@ -168,7 +170,23 @@ public class Ventas implements VentaService {
         return ventaDTOS;
     }
 
+    @Override
+    public List<Venta> ventasRecientesDeCliente(Long idCliente) throws Exception {
+        List<Venta> ventas = new ArrayList<>();
+        List<Venta> ventasCacheadas;
 
+        ventasCacheadas = this.cacheVentaService.listarVentasDeUnCliente(idCliente);
+        if(ventasCacheadas.size() > 0)
+            return ventasCacheadas;
+        inTransactionExecute((em) -> {
+            ventas.addAll(em.createQuery("SELECT v FROM Venta v JOIN FETCH v.listaProductos WHERE v.cliente.id = :idCliente ORDER BY v.fechaVenta DESC ", Venta.class)
+                    .setParameter("idCliente", idCliente)
+                    .setMaxResults(3)
+                    .getResultList());
+        });
+        this.cacheVentaService.persistirUltimasVentas(ventas, idCliente);
+        return ventas;
+    }
 
     public void inTransactionExecute(Consumer<EntityManager> bloqueDeCodigo) throws Exception {
         EntityManager em = emf.createEntityManager();

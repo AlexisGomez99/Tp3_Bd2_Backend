@@ -13,9 +13,6 @@ public class NextNumber {
     private int anio;
     private int actual;
 
-    @Version
-    private int version;
-
     public NextNumber(int anio, int actual) {
         this.anio = anio;
         this.actual = actual;

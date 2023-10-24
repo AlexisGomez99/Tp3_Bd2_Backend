@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +18,7 @@ public class Venta {
     @Id
     @GeneratedValue
     private Long id;
-    private LocalDate fechaVenta;
+    private LocalDateTime fechaVenta;
     @ManyToOne
     private Cliente cliente;
     @ManyToOne
@@ -30,7 +31,7 @@ public class Venta {
 
 
 
-    public Venta(LocalDate fechaVenta, Cliente cliente, List<Producto> listaProductos, double montoTotal, Tarjeta tarjeta, String numeroUnico) {
+    public Venta(LocalDateTime fechaVenta, Cliente cliente, List<Producto> listaProductos, double montoTotal, Tarjeta tarjeta, String numeroUnico) {
         this.fechaVenta = fechaVenta;
         this.cliente = cliente;
         this.listaProductos = this.convertProd(listaProductos);
